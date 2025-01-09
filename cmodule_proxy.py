@@ -305,7 +305,7 @@ class CModule_Proxy:
             self.showInfo(msg, Upgrade_Status.SI_TAG_EXCEPT)
 
     def startUpgrade(self):
-        self.showInfo(f"C Module directory:{self.mUgradeCell.mModulePath}", Upgrade_Status.SI_TAG_INFO)
+        self.showInfo(f"C Module directory: {self.mUgradeCell.mModulePath}", Upgrade_Status.SI_TAG_INFO)
 
         cModuleThread = threading.Thread(target=self.start_cmodule_proxy, args=())
         cModuleThread.start()

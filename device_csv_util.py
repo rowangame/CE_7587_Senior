@@ -16,10 +16,10 @@ class Device_Csv_Util:
     FILENAME = FILENAME_PREFIX + ".csv"
 
     # 定义字段名
-    FIELDNAMES = ["Mac", "Version", "BT", "Voice", "Demo", "OpTime"]
+    FIELDNAMES = ["Mac", "Previous", "Version", "BT", "Voice", "Demo", "OpTime"]
 
     # 文件记录大于指定行数后,需要开始新的文件记录(提高写入效率)
-    MAX_RECORDS = 1000
+    MAX_RECORDS = 800
 
     @classmethod
     def getFilePath(cls):
@@ -52,13 +52,15 @@ class Device_Csv_Util:
         return tmpCsvFile
 
     @classmethod
-    def add_or_update_record(cls, csvFile: str, mac: str, version: str, bt: str, voice: str, demo: str):
+    def add_or_update_record(cls, csvFile: str, mac: str, previous: str, version: str, bt: str, voice: str, demo: str):
         """
         添加或更新记录
         :param csvFile:
             csvFile 文件路径
         :param mac:
             设备Mac地址
+        :parameter previous
+            上一个版本
         :param version:
             设备版本号
         :param bt:
@@ -81,6 +83,7 @@ class Device_Csv_Util:
         if not boNeedSave:
             new_record = {
                 "Mac": "None",
+                "Previous": "None#None#None",
                 "Version": "None#None#None",
                 "BT": bt,
                 "Voice": voice,
@@ -95,6 +98,7 @@ class Device_Csv_Util:
             for row in reader:
                 if row["Mac"] == mac:
                     # 更新现有记录
+                    row["Previous"] = previous
                     row["Version"] = version
                     row["BT"] = bt
                     row["Voice"] = voice
@@ -108,6 +112,7 @@ class Device_Csv_Util:
         if not updated:
             new_record = {
                 "Mac": mac,
+                "Previous": previous,
                 "Version": version,
                 "BT": bt,
                 "Voice": voice,

@@ -56,6 +56,8 @@ class Upgrade_Cell:
         # 升级结果记录
         self.mUpgradeResult = []
 
+        # 旧版本(保存升级结果用到)
+        self.mPrevious = ""
         # 设备信息(版本号)
         self.mVersion = ""
         # mac地址信息
@@ -88,6 +90,7 @@ class Upgrade_Cell:
         self.mUpgradeBinLst.clear()
         self.mUpgradeResult.clear()
 
+        self.mPrevious = ""
         self.mVersion = ""
         self.mMacAddress = ""
         self.mUpgradeProgress = 0

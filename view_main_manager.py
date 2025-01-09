@@ -739,6 +739,7 @@ class View_Main_Manager(object):
             if upCell.mUpgradeIndex > 0:
                 csvFile = Device_Csv_Util.getFileName()
                 tmpMac = upCell.mMacAddress
+                tmpPrevious = upCell.mPrevious
                 tmpVer = upCell.mVersion
 
                 tmpBtIndex = Device_Filepath_Util.find_index_by_filepath(upCell.mUpgradeBinLst[0])
@@ -750,11 +751,12 @@ class View_Main_Manager(object):
                 tmpVoiceIndex = Device_Filepath_Util.find_index_by_filepath(upCell.mUpgradeBinLst[2])
                 tmpVoiceValue = f"{tmpVoiceIndex}#{upCell.mUpgradeResult[2]}"
 
-                tmpNewRecord = Device_Csv_Util.add_or_update_record(csvFile, tmpMac, tmpVer, tmpBtValue,
-                                                                    tmpVoiceValue, tmpDemoValue)
+                tmpNewRecord = Device_Csv_Util.add_or_update_record(csvFile, tmpMac, tmpPrevious, tmpVer,
+                                                                    tmpBtValue, tmpVoiceValue, tmpDemoValue)
             else:
                 csvFile = Device_Csv_Util.getFileName()
                 tmpMac = upCell.mMacAddress
+                tmpPrevious = upCell.mPrevious
                 tmpVer = upCell.mVersion
 
                 tmpRecord = Device_Csv_Util.find_record_by_mac(csvFile, tmpMac)
@@ -773,7 +775,7 @@ class View_Main_Manager(object):
                     tmpVoiceValue = f"{tmpBinIndex}#{upCell.mUpgradeResult[0]}"
                 else:
                     tmpDemoValue = f"{tmpBinIndex}#{upCell.mUpgradeResult[0]}"
-                tmpNewRecord = Device_Csv_Util.add_or_update_record(csvFile, tmpMac, tmpVer,
+                tmpNewRecord = Device_Csv_Util.add_or_update_record(csvFile, tmpMac, tmpPrevious, tmpVer,
                                                                     tmpBtValue, tmpVoiceValue, tmpDemoValue)
             # 如果是自动升级方式,则显示三种结果状态
             if upCell.mUpgradeIndex > 0:
@@ -803,9 +805,12 @@ class View_Main_Manager(object):
 
             tmpRltCnt = len(upCell.mUpgradeResult)
             sucCnt = 0
+            ignoreCnt = 0
             for i in range(tmpRltCnt):
                 if upCell.mUpgradeResult[i] == Upgrade_Status.RLT_STATE_PASS:
                     sucCnt += 1
+                if upCell.mUpgradeResult[i] == Upgrade_Status.RLT_STATE_IGNORE:
+                    ignoreCnt += 1
             # 结果状态
             rltStatus = f"{upCell.mUpgradeResult[0]},{upCell.mUpgradeResult[1]},{upCell.mUpgradeResult[2]}"
             tmpIndex = cls.mModel.index(tmpRow, cls.mBurnStateId)
@@ -816,10 +821,11 @@ class View_Main_Manager(object):
             # 全部类型升级成功与部分成功,显示不同的颜色
             if sucCnt == tmpRltCnt:
                 tmpItem.setBackground(QBrush(QColor(0, 255, 0)))
-            elif sucCnt == 0:
-                tmpItem.setBackground(QBrush(QColor(255, 0, 0)))
             else:
-                tmpItem.setBackground(QBrush(QColor(255, 255, 0)))
+                if (sucCnt > 0) or (ignoreCnt == tmpRltCnt):
+                    tmpItem.setBackground(QBrush(QColor(255, 255, 0)))
+                else:
+                    tmpItem.setBackground(QBrush(QColor(255, 0, 0)))
         except Exception as e:
             print(f"[{upCell.mIndex}] show_process_status_info error?" + repr(e))
 
@@ -836,8 +842,8 @@ class View_Main_Manager(object):
             lineDeviceInfoTitle = f"{Language_Util.getValue('dev_info')}"
             allVer = record["Version"].split("#")
             lineVer = f"{Language_Util.getValue('dev_version')}" + f" BT={allVer[0]} Voice={allVer[1]} Demo={allVer[2]}"
-            lineMac = f"{Language_Util.getValue('dev_mac')}" + record["Mac"]
-            lineOpTime = f"{Language_Util.getValue('dev_info_last_upgrade')}:{record['OpTime']}"
+            lineMac = f"{Language_Util.getValue('dev_mac')} " + record["Mac"]
+            lineOpTime = f"{Language_Util.getValue('dev_info_last_upgrade')}: {record['OpTime']}"
 
             # 升级类型-状态-文件路径
             ctSpan = 8
@@ -961,7 +967,7 @@ class View_Main_Manager(object):
 
             allVer = ver.split("#")
             lineVer = f"{Language_Util.getValue('dev_version')}" + f" BT={allVer[0]} Voice={allVer[1]} Demo={allVer[2]}"
-            lineMac = f"{Language_Util.getValue('dev_mac')}" + mac
+            lineMac = f"{Language_Util.getValue('dev_mac')} " + mac
 
             sTagColor = "#00AA00"
             sCtxColor = "#000000"

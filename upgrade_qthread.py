@@ -98,6 +98,9 @@ class Upgrade_QThread(QThread):
                                 self.call_fun_signal.emit(self.mUpgradeCell.mIndex, Upgrade_Status.SI_TAG_END, [])
                                 break
                         else:
+                            # 第一个类型开始时,保存设备版号信息(用于区别升级前后版本变化)
+                            if tmpTypeIndex == 0:
+                                self.mUpgradeCell.mPrevious = lstValue[0]
                             # 保存设备信息
                             self.mUpgradeCell.mVersion = lstValue[0]
                             self.mUpgradeCell.mMacAddress = lstValue[1]

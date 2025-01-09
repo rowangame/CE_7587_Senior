@@ -7,7 +7,7 @@
 
 class Config_Data:
     # 当前版本号
-    TOOL_VERSION = "6.1"
+    TOOL_VERSION = "6.2"
 
     # 全局icon对象
     MAIN_ICON = None
